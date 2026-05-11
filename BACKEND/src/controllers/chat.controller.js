@@ -115,7 +115,7 @@ export const sendMessage = asyncHandler(async (req, res) => {
     .populate("sender", "username")
     .populate("receiver", "username");
 
-  // 🔥 FIXED SOCKET BLOCK (INSIDE TRY)
+  // SOCKET BLOCK
   try {
     const io = getIO();
 
@@ -131,12 +131,10 @@ export const sendMessage = asyncHandler(async (req, res) => {
         createdAt: populatedMessage.createdAt,
       };
 
-      // ✅ SAME PAYLOAD FOR BOTH USERS
       io.to(receiverId).emit("getMessage", socketPayload);
       io.to(String(req.user._id)).emit("getMessage", socketPayload);
     }
 
-   // 💣 FINAL SAFE NOTIFICATION FIX
 if (String(receiverId) !== String(req.user._id)) {
   notifyNewMessage(
     receiverId,
